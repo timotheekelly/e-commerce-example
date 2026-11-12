@@ -1,0 +1,139 @@
+
+### Create a customer (PostgreSQL)
+POST http://localhost:8080/api/customers
+Content-Type: application/json
+
+{
+  "name": "John Smith",
+  "email": "john@example.com"
+}
+
+> {%
+    client.global.set("customerId", response.body.id);
+%}
+
+### Get customer
+GET http://localhost:8080/api/customers/{{customerId}}
+
+
+### Create an electronics product (MongoDB)
+POST http://localhost:8080/api/products
+Content-Type: application/json
+
+{
+  "name": "MacBook Pro",
+  "category": "electronics",
+  "price": 2499.99,
+  "attributes": {
+    "processor": "M4 Pro",
+    "ram": "24GB",
+    "storage": "512GB",
+    "screenSize": 14
+  }
+}
+
+> {%
+    client.global.set("laptopId", response.body.id);
+%}
+
+### Create a clothing product (MongoDB)
+POST http://localhost:8080/api/products
+Content-Type: application/json
+
+{
+  "name": "Leather Jacket",
+  "category": "clothing",
+  "price": 249.99,
+  "attributes": {
+    "size": "L",
+    "material": "Leather",
+    "colour": "Brown"
+  }
+}
+
+> {%
+    client.global.set("jacketId", response.body.id);
+%}
+
+### Create a furniture product (MongoDB)
+POST http://localhost:8080/api/products
+Content-Type: application/json
+
+{
+  "name": "Oak Dining Table",
+  "category": "furniture",
+  "price": 899.00,
+  "attributes": {
+    "material": "Solid Oak",
+    "lengthCm": 180,
+    "widthCm": 90,
+    "seats": 6
+  }
+}
+
+> {%
+    client.global.set("tableId", response.body.id);
+%}
+
+### Get laptop by ID
+GET http://localhost:8080/api/products/{{laptopId}}
+
+
+### Get products by category - electronics
+GET http://localhost:8080/api/products?category=electronics
+
+
+### Get products by category - clothing
+GET http://localhost:8080/api/products?category=clothing
+
+
+### Get products by category - furniture
+GET http://localhost:8080/api/products?category=furniture
+
+
+### Create an order for the laptop (PostgreSQL + MongoDB)
+POST http://localhost:8080/api/orders
+Content-Type: application/json
+
+{
+  "customerId": {{customerId}},
+  "productId": "{{laptopId}}",
+  "quantity": 2
+}
+
+> {%
+    client.global.set("orderId", response.body.id);
+%}
+
+### Get enriched order details (PostgreSQL + MongoDB)
+GET http://localhost:8080/api/orders/{{orderId}}
+
+
+### Create an order for the jacket
+POST http://localhost:8080/api/orders
+Content-Type: application/json
+
+{
+  "customerId": {{customerId}},
+  "productId": "{{jacketId}}",
+  "quantity": 1
+}
+
+
+### Get customer's order history (PostgreSQL)
+GET http://localhost:8080/api/customers/{{customerId}}/orders
+
+
+### Test missing product
+GET http://localhost:8080/api/products/000000000000000000000000
+
+
+### Test invalid order quantity
+POST http://localhost:8080/api/orders
+Content-Type: application/json
+
+{
+  "customerId": {{customerId}},
+  "productId": "{{laptopId}}",
+  "quantity": -1
+}
